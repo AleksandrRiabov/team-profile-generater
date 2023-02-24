@@ -9,7 +9,7 @@ const OUTPUT_DIR = path.resolve(__dirname, "output");
 const outputPath = path.join(OUTPUT_DIR, "team.html");
 
 const render = require("./src/page-template.js");
-
+let employees = []
 
 // TODO: Write Code to gather information about the development team members, and render the HTML file.
 
@@ -24,7 +24,7 @@ inquirer.prompt(
     {
       type: 'input',
       message: 'What is Employee ID',
-      name: 'emloyeeID',
+      name: 'id',
       validate: validateInput
     },
     {
@@ -40,20 +40,129 @@ inquirer.prompt(
       name: 'officeNumber',
       validate: validateNumber
     },
-    {
-      type: 'list',
-      message: 'What is your Office Number?',
-      choices: [new inquirer.Separator(),'Add engineer', new inquirer.Separator(),'Add Intern', new inquirer.Separator(),'Finish building the team',new inquirer.Separator()],
-      name: 'addEmployee',
-    },
   ]
 )
   .then(response => {
-    console.log(response)
-  })
+    const { name, id, email, officeNumber } = response;
+    const manager = new Manager(name, id, email, officeNumber);
+    employees.push(manager);
+
+    promptForNextEmployee();
+  });
 
 
+function promptForNextEmployee() {
+  inquirer.prompt([
+    {
+      type: 'list',
+      message: 'What Employee do you want to add next?',
+      choices: [
+        new inquirer.Separator(),
+        'Add engineer',
+        new inquirer.Separator(),
+        'Add Intern',
+        new inquirer.Separator(),
+        'Finish building the team',
+        new inquirer.Separator()
+      ],
+      name: 'addEmployee',
+    },
+  ])
+    .then(response => {
+      const { addEmployee } = response;
 
+      switch (addEmployee) {
+        case 'Add engineer':
+          promptForEngineer();
+          break;
+        case 'Add Intern':
+          promptForIntern();
+          break;
+        default:
+          console.log('(=======)')
+          console.log(employees);
+      }
+    })
+}
+
+// PROMPT for an Engineer
+function promptForEngineer() {
+  inquirer.prompt([
+    {
+      type: 'input',
+      message: "What is the engineer's name?",
+      name: 'name',
+      validate: validateInput
+    },
+    {
+      type: 'input',
+      message: 'What is the engineer Employee ID',
+      name: 'id',
+      validate: validateInput
+    },
+    {
+      type: 'email',
+      message: `Please enter engineer email address`,
+      name: 'email',
+      default: () => { },
+      validate: validateEmail
+    },
+    {
+      type: 'input',
+      message: "What is the engineer's GitHub username?",
+      name: 'github',
+      validate: validateInput
+    },
+  ])
+    .then(response => {
+      const { name, id, email, github } = response;
+      const engineer = new Engineer(name, id, email, github);
+      employees.push(engineer);
+
+      promptForNextEmployee();
+    });
+}
+
+
+//Prompt for Intern
+function promptForIntern() {
+  inquirer.prompt([
+    {
+      type: 'input',
+      message: "What is the intern's name?",
+      name: 'name',
+      validate: validateInput
+    },
+    {
+      type: 'input',
+      message: "What is the intern's Employee ID",
+      name: 'id',
+      validate: validateInput
+    },
+    {
+      type: 'email',
+      message: `Please enter intern's email address`,
+      name: 'email',
+      default: () => { },
+      validate: validateEmail
+    },
+    {
+      type: 'input',
+      message: "What is the intern's's School name?",
+      name: 'school',
+      validate: validateInput
+    },
+  ])
+    .then(response => {
+      const { name, id, email, school } = response;
+      const intern = new Engineer(name, id, email, school);
+      employees.push(intern);
+
+      promptForNextEmployee();
+    });
+}
+
+//========== VALIDATION FUNCTIONS +++++++++++
 function validateEmail(email) {
   const valid = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email);
 
@@ -74,7 +183,7 @@ function validateInput(val) {
   }
 }
 
-function validateNumber (val) {
+function validateNumber(val) {
   if (parseInt(val.trim())) {
     return true
   } else {
