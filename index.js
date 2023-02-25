@@ -79,8 +79,7 @@ function promptForNextEmployee() {
           promptForIntern();
           break;
         default:
-          console.log('(=======)')
-          console.log(employees);
+          createHTMLFile();
       }
     })
 }
@@ -155,12 +154,39 @@ function promptForIntern() {
   ])
     .then(response => {
       const { name, id, email, school } = response;
-      const intern = new Engineer(name, id, email, school);
+      const intern = new Intern(name, id, email, school);
       employees.push(intern);
 
       promptForNextEmployee();
     });
 }
+
+
+//Create Index HTML 
+function createHTMLFile() {
+  const file = render(employees);
+
+  // Check if folder with name 'output' exist if no, create folder and file, if yes rewrite the file
+  fs.access("./output", function (error) {
+    if (error) { //error mens no folder with that name exists
+      //Create new folder
+      fs.mkdir('./output', error => {
+        error && console.log(error);
+      });
+    }
+
+    //Write/rewrite html file
+    fs.writeFile('./output/index.html', file, error => {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log('html file has been created.');
+      }
+    });
+  });
+}
+
+
 
 //========== VALIDATION FUNCTIONS +++++++++++
 function validateEmail(email) {
