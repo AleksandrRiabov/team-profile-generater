@@ -8,43 +8,17 @@ const fs = require("fs");
 const OUTPUT_DIR = path.resolve(__dirname, "output");
 const outputPath = path.join(OUTPUT_DIR, "team.html");
 
+const { managerQuestions, engineerQuestions, internQuestions, nextStepOptons } = require('./assets/js/questions.js');
+
 const render = require("./src/page-template.js");
-let employees = []
+
+let employees = [];
 
 // TODO: Write Code to gather information about the development team members, and render the HTML file.
 
-inquirer.prompt(
-  [
-    {
-      type: 'input',
-      message: 'What is your user name?',
-      name: 'name',
-      validate: validateInput
-    },
-    {
-      type: 'input',
-      message: 'What is Employee ID',
-      name: 'id',
-      validate: validateInput
-    },
-    {
-      type: 'email',
-      message: `Please enter user's email`,
-      name: 'email',
-      default: () => { },
-      validate: validateEmail
-    },
-    {
-      type: 'input',
-      message: 'What is your Office Number?',
-      name: 'officeNumber',
-      validate: validateNumber
-    },
-  ]
-)
+inquirer.prompt(managerQuestions)
   .then(response => {
-    const { name, id, email, officeNumber } = response;
-    const manager = new Manager(name, id, email, officeNumber);
+    const manager = new Manager(...Object.values(response));
     employees.push(manager);
 
     promptForNextEmployee();
@@ -52,26 +26,9 @@ inquirer.prompt(
 
 
 function promptForNextEmployee() {
-  inquirer.prompt([
-    {
-      type: 'list',
-      message: 'What Employee do you want to add next?',
-      choices: [
-        new inquirer.Separator(),
-        'Add engineer',
-        new inquirer.Separator(),
-        'Add Intern',
-        new inquirer.Separator(),
-        'Finish building the team',
-        new inquirer.Separator()
-      ],
-      name: 'addEmployee',
-    },
-  ])
+  inquirer.prompt(nextStepOptons)
     .then(response => {
-      const { addEmployee } = response;
-
-      switch (addEmployee) {
+      switch (response.addEmployee) {
         case 'Add engineer':
           promptForEngineer();
           break;
@@ -86,36 +43,9 @@ function promptForNextEmployee() {
 
 // PROMPT for an Engineer
 function promptForEngineer() {
-  inquirer.prompt([
-    {
-      type: 'input',
-      message: "What is the engineer's name?",
-      name: 'name',
-      validate: validateInput
-    },
-    {
-      type: 'input',
-      message: 'What is the engineer Employee ID',
-      name: 'id',
-      validate: validateInput
-    },
-    {
-      type: 'email',
-      message: `Please enter engineer email address`,
-      name: 'email',
-      default: () => { },
-      validate: validateEmail
-    },
-    {
-      type: 'input',
-      message: "What is the engineer's GitHub username?",
-      name: 'github',
-      validate: validateInput
-    },
-  ])
+  inquirer.prompt(engineerQuestions)
     .then(response => {
-      const { name, id, email, github } = response;
-      const engineer = new Engineer(name, id, email, github);
+      const engineer = new Engineer(...Object.values(response));
       employees.push(engineer);
 
       promptForNextEmployee();
@@ -125,36 +55,9 @@ function promptForEngineer() {
 
 //Prompt for Intern
 function promptForIntern() {
-  inquirer.prompt([
-    {
-      type: 'input',
-      message: "What is the intern's name?",
-      name: 'name',
-      validate: validateInput
-    },
-    {
-      type: 'input',
-      message: "What is the intern's Employee ID",
-      name: 'id',
-      validate: validateInput
-    },
-    {
-      type: 'email',
-      message: `Please enter intern's email address`,
-      name: 'email',
-      default: () => { },
-      validate: validateEmail
-    },
-    {
-      type: 'input',
-      message: "What is the intern's's School name?",
-      name: 'school',
-      validate: validateInput
-    },
-  ])
+  inquirer.prompt(internQuestions)
     .then(response => {
-      const { name, id, email, school } = response;
-      const intern = new Intern(name, id, email, school);
+      const intern = new Intern(...Object.values(response));
       employees.push(intern);
 
       promptForNextEmployee();
@@ -163,57 +66,23 @@ function promptForIntern() {
 
 
 //Create Index HTML 
-function createHTMLFile() {
+async function createHTMLFile() {
+  // Check if folder with name 'output' exist if no, create folder and file, if yes rewrite the file
+  if (!fs.existsSync(OUTPUT_DIR)) {
+    fs.mkdirSync((OUTPUT_DIR), err => console.log(err));
+  }
+
   const file = render(employees);
 
-  // Check if folder with name 'output' exist if no, create folder and file, if yes rewrite the file
-  fs.access("./output", function (error) {
-    if (error) { //error mens no folder with that name exists
-      //Create new folder
-      fs.mkdir('./output', error => {
-        error && console.log(error);
-      });
+  //Write/rewrite html file
+  fs.writeFileSync(outputPath, file, error => {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log('html file has been created.');
     }
-
-    //Write/rewrite html file
-    fs.writeFile('./output/index.html', file, error => {
-      if (error) {
-        console.log(error);
-      } else {
-        console.log('html file has been created.');
-      }
-    });
   });
 }
 
 
 
-//========== VALIDATION FUNCTIONS +++++++++++
-function validateEmail(email) {
-  const valid = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email);
-
-  if (valid) {
-    return true;
-  } else {
-    console.log(".  Please enter a valid email");
-    return false;
-  }
-}
-
-function validateInput(val) {
-  if (val.trim()) {
-    return true
-  } else {
-    console.log(' Invalid Input.');
-    return false
-  }
-}
-
-function validateNumber(val) {
-  if (parseInt(val.trim())) {
-    return true
-  } else {
-    console.log(' Must be a Number');
-    return false
-  }
-}
