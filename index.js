@@ -67,7 +67,7 @@ function promptForIntern() {
 }
 
 //Write / rewrite team.html file 
-async function createHTMLFile() {
+function createHTMLFile() {
   // Check if folder with name 'output' exist if not, create folder and file, if yes rewrite the file
   if (!fs.existsSync(OUTPUT_DIR)) {
     fs.mkdirSync((OUTPUT_DIR), err => console.log(err));
