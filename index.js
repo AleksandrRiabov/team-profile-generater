@@ -15,8 +15,7 @@ const render = require("./src/page-template.js");
 //Employees array will be used to generate html using 'rendder' function
 let employees = [];
 
-// TODO: Write Code to gather information about the development team members, and render the HTML file.
-
+//Prompt for Manager (Starts on loading file)
 inquirer.prompt(managerQuestions)
   .then(response => {
     // Cretae new Manager object using response
@@ -55,7 +54,6 @@ function promptForEngineer() {
     });
 }
 
-
 //Prompt for Intern
 function promptForIntern() {
   inquirer.prompt(internQuestions)
@@ -67,7 +65,6 @@ function promptForIntern() {
       promptForNextEmployee();
     });
 }
-
 
 //Write / rewrite team.html file 
 async function createHTMLFile() {
