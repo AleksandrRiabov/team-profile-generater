@@ -4,25 +4,25 @@ const { email, text, number } = require('./validate.js');
 const managerQuestions = [
   {
     type: 'input',
-    message: 'What is your user name?',
+    message: "What is the team manager's name?",
     name: 'name',
     validate: text
   },
   {
     type: 'input',
-    message: 'What is Employee ID',
+    message: "What is the team manager's id?",
     name: 'id',
     validate: text
   },
   {
     type: 'email',
-    message: `Please enter user's email`,
+    message: "What is the team manager's email?",
     name: 'email',
     validate: email
   },
   {
     type: 'input',
-    message: 'What is your Office Number?',
+    message: "What is the team manager's office number?",
     name: 'officeNumber',
     validate: number
   },
@@ -31,26 +31,26 @@ const managerQuestions = [
 const engineerQuestions = [
   {
     type: 'input',
-    message: "What is the engineer's name?",
+    message: "What is your engineer's name?",
     name: 'name',
     validate: text
   },
   {
     type: 'input',
-    message: 'What is the engineer Employee ID',
+    message: "What is your engineer's id",
     name: 'id',
     validate: text
   },
   {
     type: 'email',
-    message: `Please enter engineer email address`,
+    message: "What is your engineer's email?",
     name: 'email',
     default: () => { },
     validate: email
   },
   {
     type: 'input',
-    message: "What is the engineer's GitHub username?",
+    message: "What is your engineer's GitHub username?",
     name: 'github',
     validate: text
   },
@@ -59,26 +59,26 @@ const engineerQuestions = [
 const internQuestions = [
   {
     type: 'input',
-    message: "What is the intern's name?",
+    message: "What is your intern's name?",
     name: 'name',
     validate: text
   },
   {
     type: 'input',
-    message: "What is the intern's Employee ID",
+    message: "What is your intern's id?",
     name: 'id',
     validate: text
   },
   {
     type: 'email',
-    message: `Please enter intern's email address`,
+    message: "What is your intern's email?",
     name: 'email',
     default: () => { },
     validate: email
   },
   {
     type: 'input',
-    message: "What is the intern's's School name?",
+    message: "What is your intern's School name?",
     name: 'school',
     validate: text
   },
@@ -87,7 +87,7 @@ const internQuestions = [
 const nextStepOptons = [
   {
     type: 'list',
-    message: 'What Employee do you want to add next?',
+    message: 'Which type of team member would you like to add?',
     choices: [
       new inquirer.Separator(),
       'Add engineer',
